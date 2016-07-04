@@ -1,0 +1,348 @@
+module cfnbr 1.0.0;
+require {
+	type unconfined_t;
+	type sysctl_t;
+	type var_lib_t;
+	type howl_port_t;
+
+		type root_t;
+	type device_t;
+	type gconf_home_t;
+	type selinux_config_t;
+	type var_t;
+	type net_conf_t;
+	type data_home_t;
+	type NetworkManager_var_run_t;
+	type config_home_t;
+	type chrome_sandbox_home_t;
+	type system_dbusd_t;
+	type machineid_t;
+	type passwd_file_t;
+	type unconfined_dbusd_t;
+	type http_port_t;
+	type bin_t;
+	type dri_device_t;
+	type cache_home_t;
+	type mozilla_home_t;
+	type ld_so_cache_t;
+	type sysctl_kernel_t;
+	type var_run_t;
+	type cert_t;
+	type init_t;
+	type xauth_home_t;
+	type home_cert_t;
+	type bluetooth_t;
+	type tmp_t;
+	type user_tty_device_t;
+	type fs_t;
+	type user_home_dir_t;
+	type ld_so_t;
+	type home_root_t;
+	type sysfs_t;
+	type tmpfs_t;
+	type fonts_t;
+	type devtty_t;
+	type urandom_device_t;
+	type locale_t;
+	type null_device_t;
+	type local_login_t;
+	type system_dbusd_var_run_t;
+	type cfnbr_t;
+	type security_t;
+	type sysctl_net_t;
+	type xserver_t;
+	type textrel_shlib_t;
+	type usr_t;
+	type user_devpts_t;
+	type unconfined_t;
+	type cpu_online_t;
+	type proc_t;
+	type pulseaudio_home_t;
+	type udev_var_run_t;
+	type lib_t;
+	type etc_t;
+	type system_dbusd_var_lib_t;
+	type sysctl_crypto_t;
+	type cfnbr_exec_t;
+	type shell_exec_t;
+	type user_tmp_t;
+	type fonts_cache_t;	
+	type user_home_t;
+
+	role unconfined_r;
+		class fd use;
+	class tcp_socket { connect create getattr getopt ioctl name_connect read setopt write };
+	class sock_file { create getattr unlink write };
+	class netlink_route_socket { bind create getattr nlmsg_read read write };
+	class dir { add_name create getattr open read remove_name rmdir search setattr write };
+	class chr_file { getattr ioctl open read write };
+	class process { getattr execmem fork getcap getsched noatsecure rlimitinh setcap setrlimit setsched sigchld siginh sigkill signal signull transition };
+	class filesystem getattr;
+	class capability { sys_admin sys_chroot sys_ptrace };
+	class netlink_kobject_uevent_socket { bind create getattr setopt };
+	class file { append create entrypoint execute execute_no_trans getattr ioctl lock open read rename setattr unlink write };
+	class udp_socket { connect create getattr ioctl read setopt write bind name_bind };
+	class shm { associate create destroy getattr read unix_read unix_write write };
+	class dbus send_msg;
+	class unix_stream_socket { bind connect connectto create getattr getopt listen read setopt shutdown write };
+	class fifo_file { getattr ioctl read write };
+	class lnk_file { create getattr read unlink };
+}
+
+type cfnbr_t;
+type cfnbr_exec_t;
+
+role unconfined_r types cfnbr_t;
+
+type_transition unconfined_t cfnbr_exec_t : process cfnbr_t;
+
+
+#============= bluetooth_t ==============
+allow bluetooth_t cfnbr_t:dbus send_msg;
+
+#============= cfnbr_t ==============
+allow cfnbr_t NetworkManager_var_run_t:dir read;
+
+#!!!! WARNING: 'bin_t' is a base type.
+allow cfnbr_t bin_t:file { execute execute_no_trans getattr ioctl open read };
+allow cfnbr_t bin_t:lnk_file read;
+allow cfnbr_t bluetooth_t:dbus send_msg;
+allow cfnbr_t cache_home_t:dir { getattr search open read};
+allow cfnbr_t cert_t:dir { getattr open read };
+allow cfnbr_t cert_t:file { getattr open read };
+
+#!!!! The file '/etc/pki/ca-trust/source/ca-bundle.legacy.crt' is mislabeled on your system.  
+#!!!! Fix with $ restorecon -R -v /etc/pki/ca-trust/source/ca-bundle.legacy.crt
+allow cfnbr_t cert_t:lnk_file read;
+allow cfnbr_t chrome_sandbox_home_t:dir { add_name getattr remove_name search write };
+allow cfnbr_t chrome_sandbox_home_t:file { create getattr open read rename unlink write };
+allow cfnbr_t config_home_t:dir { getattr read setattr };
+allow cfnbr_t config_home_t:file { getattr ioctl open read };
+allow cfnbr_t cpu_online_t:file { open read };
+allow cfnbr_t data_home_t:dir search;
+allow cfnbr_t data_home_t:file { getattr open read };
+allow cfnbr_t devtty_t:chr_file { open read write };
+allow cfnbr_t dri_device_t:chr_file { getattr ioctl read write };
+allow cfnbr_t etc_t:dir { getattr open read search };
+
+#!!!! WARNING: 'etc_t' is a base type.
+allow cfnbr_t etc_t:file { getattr open read };
+
+#!!!! The file '/etc/fonts/conf.d/10-scale-bitmap-fonts.conf' is mislabeled on your system.  
+#!!!! Fix with $ restorecon -R -v /etc/fonts/conf.d/10-scale-bitmap-fonts.conf
+allow cfnbr_t etc_t:lnk_file read;
+allow cfnbr_t fonts_cache_t:dir search;
+allow cfnbr_t fonts_cache_t:file { getattr open read };
+allow cfnbr_t fonts_t:dir { getattr open read search };
+allow cfnbr_t fonts_t:file { getattr open read };
+
+#!!!! The file '/usr/share/fonts/gnu-freefont' is mislabeled on your system.  
+#!!!! Fix with $ restorecon -R -v /usr/share/fonts/gnu-freefont
+allow cfnbr_t fonts_t:lnk_file read;
+allow cfnbr_t fs_t:filesystem getattr;
+
+#!!!! The file '/usr/lib64/chromium/chrome' is mislabeled on your system.  
+#!!!! Fix with $ restorecon -R -v /usr/lib64/chromium/chrome
+allow cfnbr_t cfnbr_exec_t:file { entrypoint execute execute_no_trans getattr open read };
+allow cfnbr_t home_cert_t:dir { getattr search };
+allow cfnbr_t home_cert_t:file { getattr lock open read write };
+
+#!!!! WARNING: 'home_root_t' is a base type.
+allow cfnbr_t home_root_t:dir { getattr search };
+allow cfnbr_t http_port_t:tcp_socket name_connect;
+allow cfnbr_t init_t:dir search;
+allow cfnbr_t init_t:file { getattr open read };
+allow cfnbr_t init_t:process sigchld;
+allow cfnbr_t ld_so_cache_t:file { getattr open read };
+allow cfnbr_t ld_so_t:file { execute getattr open read };
+
+#!!!! WARNING: 'lib_t' is a base type.
+allow cfnbr_t lib_t:dir { getattr open read search };
+allow cfnbr_t lib_t:file { execute getattr open read };
+
+#!!!! WARNING: 'lib_t' is a base type.
+allow cfnbr_t lib_t:lnk_file read;
+
+#!!!! The file '/dev/tty1' is mislabeled on your system.  
+#!!!! Fix with $ restorecon -R -v /dev/tty1
+allow cfnbr_t local_login_t:fd use;
+allow cfnbr_t locale_t:dir { read search };
+allow cfnbr_t locale_t:file { getattr open read };
+allow cfnbr_t locale_t:lnk_file { getattr read };
+allow cfnbr_t machineid_t:file { getattr open read };
+allow cfnbr_t mozilla_home_t:dir { add_name getattr open read remove_name write search };
+allow cfnbr_t mozilla_home_t:file { append create getattr lock open read rename setattr unlink write };
+allow cfnbr_t mozilla_home_t:lnk_file { create unlink read };
+allow cfnbr_t net_conf_t:file { getattr open read };
+allow cfnbr_t net_conf_t:lnk_file { getattr read };
+allow cfnbr_t null_device_t:chr_file { getattr ioctl open read write };
+allow cfnbr_t passwd_file_t:file { getattr open read };
+allow cfnbr_t proc_t:dir { open read search };
+allow cfnbr_t proc_t:file { getattr open read };
+allow cfnbr_t proc_t:lnk_file read;
+allow cfnbr_t pulseaudio_home_t:file { lock open read };
+
+#!!!! WARNING: 'root_t' is a base type.
+allow cfnbr_t root_t:dir { getattr read search };
+allow cfnbr_t security_t:filesystem getattr;
+allow cfnbr_t self:capability { sys_admin sys_chroot };
+allow cfnbr_t self:dir { getattr open read search };
+allow cfnbr_t self:fifo_file { getattr ioctl read write };
+allow cfnbr_t self:file { getattr open read write };
+allow cfnbr_t self:lnk_file read;
+allow cfnbr_t self:netlink_kobject_uevent_socket { bind create getattr setopt };
+allow cfnbr_t self:netlink_route_socket { bind create getattr nlmsg_read read write };
+allow cfnbr_t self:process { execmem fork getcap getsched setcap setrlimit setsched sigchld sigkill signal signull };
+allow cfnbr_t self:shm { create destroy read unix_read unix_write write };
+allow cfnbr_t self:tcp_socket { connect create getattr getopt ioctl read setopt write };
+allow cfnbr_t self:udp_socket { connect create getattr ioctl read setopt write };
+allow cfnbr_t self:unix_stream_socket { bind connect create getattr getopt listen read setopt shutdown write };
+
+#!!!! WARNING: 'shell_exec_t' is a base type.
+allow cfnbr_t shell_exec_t:file { execute open read };
+allow cfnbr_t sysctl_crypto_t:dir search;
+allow cfnbr_t sysctl_crypto_t:file { getattr open read };
+allow cfnbr_t sysctl_kernel_t:dir search;
+allow cfnbr_t sysctl_kernel_t:file { getattr open read };
+allow cfnbr_t sysctl_net_t:dir search;
+allow cfnbr_t sysctl_net_t:file { getattr open read };
+allow cfnbr_t sysfs_t:dir { getattr open read search };
+allow cfnbr_t sysfs_t:file { getattr open read };
+allow cfnbr_t sysfs_t:lnk_file { getattr read };
+allow cfnbr_t system_dbusd_t:dbus send_msg;
+
+#!!!! The file '/run/dbus/system_bus_socket' is mislabeled on your system.  
+#!!!! Fix with $ restorecon -R -v /run/dbus/system_bus_socket
+allow cfnbr_t system_dbusd_t:unix_stream_socket connectto;
+allow cfnbr_t system_dbusd_var_lib_t:dir search;
+allow cfnbr_t system_dbusd_var_lib_t:file { getattr open read };
+allow cfnbr_t system_dbusd_var_run_t:sock_file write;
+
+#!!!! WARNING: 'textrel_shlib_t' is a base type.
+allow cfnbr_t textrel_shlib_t:file { execute getattr open read };
+
+#!!!! WARNING: 'tmp_t' is a base type.
+allow cfnbr_t tmp_t:dir { add_name create getattr open read remove_name rmdir search write };
+
+#!!!! WARNING: 'tmp_t' is a base type.
+allow cfnbr_t tmp_t:file { create getattr open read unlink write };
+allow cfnbr_t tmp_t:lnk_file { create getattr unlink };
+
+#!!!! WARNING: 'tmp_t' is a base type.
+allow cfnbr_t tmp_t:sock_file { create getattr unlink };
+allow cfnbr_t tmpfs_t:dir { add_name getattr open read remove_name write };
+allow cfnbr_t tmpfs_t:file { append create getattr open read unlink write };
+allow cfnbr_t tmpfs_t:filesystem getattr;
+allow cfnbr_t udev_var_run_t:file { getattr open read };
+allow cfnbr_t unconfined_dbusd_t:unix_stream_socket connectto;
+
+#!!!! The file '/dev/null' is mislabeled on your system.  
+#!!!! Fix with $ restorecon -R -v /dev/null
+allow cfnbr_t unconfined_t:fd use;
+allow cfnbr_t unconfined_t:process { sigchld signull };
+
+#!!!! The file '/run/user/1000/bus' is mislabeled on your system.  
+#!!!! Fix with $ restorecon -R -v /run/user/1000/bus
+allow cfnbr_t unconfined_t:unix_stream_socket connectto;
+allow cfnbr_t urandom_device_t:chr_file { getattr open read };
+allow cfnbr_t user_home_dir_t:dir { getattr search };
+allow cfnbr_t user_tmp_t:dir { getattr open read search };
+allow cfnbr_t user_tmp_t:file { getattr open read write };
+allow cfnbr_t user_tmp_t:sock_file { getattr write };
+
+#!!!! The file '/dev/tty1' is mislabeled on your system.  
+#!!!! Fix with $ restorecon -R -v /dev/tty1
+allow cfnbr_t user_tty_device_t:chr_file { getattr read write };
+
+#!!!! WARNING: 'usr_t' is a base type.
+allow cfnbr_t usr_t:dir { getattr open read search };
+
+#!!!! WARNING: 'usr_t' is a base type.
+allow cfnbr_t usr_t:file { getattr open read };
+
+#!!!! WARNING: 'usr_t' is a base type.
+allow cfnbr_t usr_t:lnk_file read;
+
+#!!!! WARNING: 'var_run_t' is a base type.
+allow cfnbr_t var_run_t:dir { getattr search };
+
+#!!!! WARNING: 'var_run_t' is a base type.
+allow cfnbr_t var_run_t:lnk_file read;
+allow cfnbr_t xauth_home_t:file { getattr open read };
+
+#!!!! The file '/dev/dri/renderD128' is mislabeled on your system.  
+#!!!! Fix with $ restorecon -R -v /dev/dri/renderD128
+allow cfnbr_t xserver_t:fd use;
+allow cfnbr_t xserver_t:unix_stream_socket connectto;
+
+allow cfnbr_t config_home_t:dir search;
+
+#!!!! WARNING: 'device_t' is a base type.
+allow cfnbr_t device_t:dir search;
+allow cfnbr_t selinux_config_t:dir search;
+
+#!!!! WARNING: 'var_t' is a base type.
+allow cfnbr_t var_t:dir search;
+
+allow cfnbr_t NetworkManager_var_run_t:dir search;
+
+#!!!! WARNING: 'bin_t' is a base type.
+allow cfnbr_t bin_t:dir search;
+allow cfnbr_t cert_t:dir search;
+allow cfnbr_t pulseaudio_home_t:dir search;
+allow cfnbr_t sysctl_t:dir search;
+allow cfnbr_t system_dbusd_var_run_t:dir search;
+allow cfnbr_t tmpfs_t:dir search;
+allow cfnbr_t udev_var_run_t:dir search;
+allow cfnbr_t lib_t:file { execute_no_trans ioctl };
+allow cfnbr_t user_devpts_t:chr_file { getattr read write };
+
+
+#!!!! WARNING: 'var_lib_t' is a base type.
+allow cfnbr_t var_lib_t:dir search;
+allow cfnbr_t unconfined_t:file entrypoint;
+allow cfnbr_t user_home_t:file entrypoint;
+allow cfnbr_t lib_t:file entrypoint;
+allow cfnbr_t self:udp_socket bind;
+allow cfnbr_t shell_exec_t:file entrypoint;
+
+dontaudit cfnbr_t self:capability sys_ptrace;
+dontaudit cfnbr_t howl_port_t:udp_socket name_bind;
+dontaudit cfnbr_t device_t:dir read;
+dontaudit cfnbr_t gconf_home_t:dir search;
+dontaudit cfnbr_t mozilla_home_t:dir { create rmdir };
+
+
+#============= init_t ==============
+allow init_t cfnbr_t:dir search;
+allow init_t cfnbr_t:file { getattr open read };
+
+#============= system_dbusd_t ==============
+allow system_dbusd_t cfnbr_t:dir search;
+allow system_dbusd_t cfnbr_t:file { open read };
+
+#============= unconfined_dbusd_t ==============
+allow unconfined_dbusd_t cfnbr_t:dir search;
+allow unconfined_dbusd_t cfnbr_t:file { open read };
+
+#============= unconfined_t ==============
+
+#!!!! The file '/usr/lib64/chromium/chrome' is mislabeled on your system.  
+#!!!! Fix with $ restorecon -R -v /usr/lib64/chromium/chrome
+allow unconfined_t cfnbr_exec_t:file { execute open read };
+allow unconfined_t cfnbr_t:process *;
+allow unconfined_t cfnbr_t:process getattr;
+allow unconfined_t cfnbr_t:dir *;
+allow unconfined_t cfnbr_t:file *;
+
+#!!!! The file '/usr/lib64/chromium/chrome' is mislabeled on your system.  
+#!!!! Fix with $ restorecon -R -v /usr/lib64/chromium/chrome
+allow unconfined_t cfnbr_t:process { noatsecure rlimitinh siginh transition };
+
+#============= xserver_t ==============
+allow xserver_t cfnbr_t:dir search;
+allow xserver_t cfnbr_t:fd use;
+allow xserver_t cfnbr_t:file { open read };
+allow xserver_t cfnbr_t:lnk_file read;
+allow xserver_t cfnbr_t:shm { associate getattr read unix_read unix_write write };
+
